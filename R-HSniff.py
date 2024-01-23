@@ -39,9 +39,9 @@ class RSniff:
 
                     print(output)
 
-        except KeyboardInterrupt:
+        except Exception as E:
 
-            exit()
+            print("[-] [Error : {}]".format(E))
 
     def __init__(self):
 
