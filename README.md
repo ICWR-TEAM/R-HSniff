@@ -4,7 +4,7 @@
 ###
 HTTP Sniffer
 ###
-![screenshot](https://raw.githubusercontent.com/CWR-TEAM/R-HSniff/main/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/ICWR-TEAM/R-HSniff/main/screenshot.png)
 ###
 ```bash
 sudo python R-HSniff.py -p [PORT]
