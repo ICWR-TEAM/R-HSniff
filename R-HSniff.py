@@ -25,8 +25,8 @@ class RSniff:
 
             http_method = re.search(r'(.*?)\s', load).group(1)
             src = packet[IP].src
-            dst = packet[IP].dst
-            # dst = re.search(r'Host:\s+([^\r\n]+)', load).group(1) # Get From Header
+            # dst = packet[IP].dst
+            dst = re.search(r'Host:\s+([^\r\n]+)', load).group(1) # Get From Header
             url = "http://{}{}".format(dst, re.search(r'\s(.*?)\s', load).group(1))
             data = re.search(r'\r\n\r\n(.+)', load)
             data = " [Data : {}]".format(data.group(1)) if data else ''
