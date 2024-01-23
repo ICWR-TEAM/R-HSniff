@@ -30,7 +30,7 @@ class RSniff:
                 # dst = packet[IP].dst
                 dst = re.search(r'Host:\s+([^\r\n]+)', load).group(1) # Get From Header
                 url = "http://{}{}".format(dst, re.search(r'\s(.*?)\s', load).group(1))
-                data = re.search(r'\r\n\r\n(.+)', load)
+                data = re.search(r'\r\n\r\n(.+)', load, re.DOTALL)
                 data = " [Data : {}]".format(data.group(1)) if data else ''
 
                 output = "[+] [From : {}] [Method : {}] [URL : {}]{}".format(src, http_method, url, data)
