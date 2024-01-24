@@ -20,30 +20,47 @@ class RSniff:
 
         try:
 
-            # if packet.haslayer(Raw) and packet.haslayer(TCP): # All PORT
             if packet.haslayer(Raw) and packet.haslayer(TCP) and packet[TCP].dport == int(self.args.port):
 
                 load = packet[Raw].load.decode(errors='ignore')
 
-                http_method = re.search(r'(.*?)\s', load)
-                http_method = http_method.group(1) if http_method else ''
+                http_method_match = re.search(r'(.*?)\s', load)
+                http_method = http_method_match.group(1) if http_method_match else ''
 
                 src = packet[IP].src
 
-                # dst = packet[IP].dst
-                dst = re.search(r'Host:\s+([^\r\n]+)', load)
-                dst = dst.group(1) if dst else ''
+                dst_match = re.search(r'Host:\s+([^\r\n]+)', load)
+                dst = dst_match.group(1) if dst_match else ''
 
-                url = re.search(r'\s(.*?)\s', load)
-                url = "http://{}{}".format(dst, url.group(1) ) if url else ''
-
-                cookie = re.search(r'Cookie:\s+([^\r\n]+)', load)
-                cookie = " [Cookie : {}]".format(cookie.group(1)) if cookie else ''
+                url_match = re.search(r'\s(.*?)\s', load)
+                url = "http://{}{}".format(dst, url_match.group(1)) if url_match else ''
 
                 data = re.search(r'\r\n\r\n(.+)', load, re.DOTALL)
-                data = " [Data : {}]".format(data.group(1)) if data else ''
+                data = "[Data : {}]".format(data.group(1)) if data else ''
+                # data = "[Data : {}]".format(str(data))
 
-                output = "[+] [From : {}] [Method : {}] [URL : {}]{}{}".format(src, http_method, url, cookie, data)
+                headers = {}
+                header_matches = re.finditer(r'([\w-]+):\s+([^\r\n]+)', load)
+
+                for match in header_matches:
+
+                    header_name = match.group(1)
+                    header_value = match.group(2)
+                    headers[header_name] = header_value
+
+                output = "[+] [Request Packet]\r\n"
+                output += "[+] [From : {}]\r\n".format(src)
+                output += "[+] [Method : {}]\r\n".format(http_method)
+                output += "[+] [URL : {}]\r\n".format(url)
+                output += "[+] [Headers]\r\n"
+
+                for header_name, header_value in headers.items():
+
+                    output += "\t[{} : {}]\r\n".format(header_name, header_value)
+
+                output += "[+] {}\r\n".format(data) if data else ''
+
+                output += "[+] [End Packet]\r\n"
 
                 if ' http/' in load.lower():
 
@@ -52,6 +69,7 @@ class RSniff:
         except Exception as E:
 
             print("[-] [Error : {}]".format(E))
+
 
     def __init__(self):
 
