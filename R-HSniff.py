@@ -25,15 +25,25 @@ class RSniff:
 
                 load = packet[Raw].load.decode(errors='ignore')
 
-                http_method = re.search(r'(.*?)\s', load).group(1)
+                http_method = re.search(r'(.*?)\s', load)
+                http_method = http_method.group(1) if http_method else ''
+
                 src = packet[IP].src
+
                 # dst = packet[IP].dst
-                dst = re.search(r'Host:\s+([^\r\n]+)', load).group(1) # Get From Header
-                url = "http://{}{}".format(dst, re.search(r'\s(.*?)\s', load).group(1))
+                dst = re.search(r'Host:\s+([^\r\n]+)', load)
+                dst = dst.group(1) if dst else ''
+
+                url = re.search(r'\s(.*?)\s', load)
+                url = "http://{}{}".format(dst, url.group(1) ) if url else ''
+
+                cookie = re.search(r'Cookie:\s+([^\r\n]+)', load)
+                cookie = " [Cookie : {}] ".format(cookie.group(1)) if cookie else ''
+
                 data = re.search(r'\r\n\r\n(.+)', load, re.DOTALL)
                 data = " [Data : {}]".format(data.group(1)) if data else ''
 
-                output = "[+] [From : {}] [Method : {}] [URL : {}]{}".format(src, http_method, url, data)
+                output = "[+] [From : {}] [Method : {}] [URL : {}]{}{}".format(src, http_method, url, cookie, data)
 
                 if ' http/' in load.lower():
 
