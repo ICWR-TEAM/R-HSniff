@@ -38,7 +38,7 @@ class RSniff:
                 url = "http://{}{}".format(dst, url.group(1) ) if url else ''
 
                 cookie = re.search(r'Cookie:\s+([^\r\n]+)', load)
-                cookie = " [Cookie : {}] ".format(cookie.group(1)) if cookie else ''
+                cookie = " [Cookie : {}]".format(cookie.group(1)) if cookie else ''
 
                 data = re.search(r'\r\n\r\n(.+)', load, re.DOTALL)
                 data = " [Data : {}]".format(data.group(1)) if data else ''
